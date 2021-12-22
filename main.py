@@ -6,20 +6,20 @@ from study import study
 def getAccounts():
     result = []
 
-    # Classic method
-    username=os.environ["USERNAME"]
-    passwd=os.environ["PASSWORD"]
-    if username and passwd:
-        result.append((username,passwd,os.getenv("ORGID", "172442")))
-
-    # New method
-    account = os.getenv("ACCOUNT", "")
-    if account:
-        account_lines = account.split("\n")
+    usernameRaw = os.getenv("USERNAME", "")
+    if len(usernameRaw.split('\n'))==1:
+        # Single User
+        passwd = os.environ["PASSWORD"]
+        if usernameRaw and passwd:
+            result.append((usernameRaw, passwd, os.getenv("ORGID", "172442")))
+    else:
+        # Multiple Users
+        account_lines = usernameRaw.split('\n')
         for lnum, line in enumerate(account_lines):
             if len(line.split(' ')) != 3:
                 raise Exception(f"第{lnum}行账号格式错误")
             result.append(line.split(' '))
+
     if not result:
         raise Exception("没有被配置的账号！请设置Secret: USERNAME和PASSWORD")
     return result
